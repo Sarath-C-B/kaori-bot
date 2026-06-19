@@ -14,6 +14,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.voice_states = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -36,6 +37,14 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
+
+@bot.tree.command()
+async def join(interaction: discord.Interaction):
+    if not interaction.user.voice:
+        return await interaction.response.send_message("Join a VC first")
+
+    await interaction.user.voice.channel.connect()
+    await interaction.response.send_message("Connected")
 
 @bot.tree.command(name="greet", description="Sends a greeting to the user")
 async def greet(interaction: discord.Interaction):
